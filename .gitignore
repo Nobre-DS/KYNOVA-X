@@ -1,0 +1,13 @@
+# Ambientes virtuais
+.venv/
+.venv_tp2/
+
+# Arquivos temporários do Python
+__pycache__/
+*.pyc
+
+# Arquivos do sistema
+.DS_Store
+
+# Configurações locais
+.env
