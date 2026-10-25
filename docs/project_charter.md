@@ -1,4 +1,4 @@
-# Project Charter — KYNOVA-X
+# Project Charter - KYNOVA-X
 
 ## 1. Identificação do Projeto
 
@@ -20,7 +20,7 @@ Desenvolver a KYNOVA-X como uma plataforma de inteligência de dados capaz de re
 
 ## 4. Escopo do Projeto
 
-**Escopo inicial — TP1:**
+**Escopo inicial - TP1:**
 
 Desenvolvimento de uma aplicação demonstrativa em Python com Streamlit, utilizando uma amostra das Estimativas de Câncer 2026–2028 do Instituto Nacional de Câncer (INCA).
 
@@ -41,3 +41,23 @@ Gestores de saúde pública, profissionais envolvidos no planejamento e na gest�
 **Stakeholders secundários:**
 
 Profissionais da área oncológica, docentes e estudantes interessados em epidemiologia, pesquisa e saúde pública.
+
+## 6. Evolução do Projeto - TP2
+
+Nesta segunda etapa, a aplicação KYNOVA-X foi aprimorada com novas funcionalidades, mantendo o objetivo inicial de facilitar o acesso e a organização de informações relacionadas à atenção oncológica.
+
+As melhorias desenvolvidas foram:
+
+- **Controle de versão:** configuração do Git e criação do repositório KYNOVA-X no GitHub.
+- **Interface interativa:** implementação de um filtro por sexo, permitindo consultar separadamente os registros masculinos e femininos das estimativas do INCA.
+- **Extração de conteúdo da web:** utilização da biblioteca Beautiful Soup para coletar informações textuais de uma página oficial do INCA, com armazenamento em arquivo CSV.
+- **Visualização dos dados extraídos:** apresentação das informações coletadas em uma tabela na aplicação Streamlit.
+- **Cache:** implementação do `st.cache_data` para reutilizar os dados carregados dos arquivos CSV.
+- **Estado de sessão:** utilização do `st.session_state` para manter a seleção do filtro durante as interações do usuário.
+- **Upload e download:** implementação de recursos para enviar arquivos CSV, complementar temporariamente os registros apresentados e baixar os dados combinados.
+
+As funcionalidades foram desenvolvidas utilizando Python e Streamlit, preservando os arquivos e a organização inicial do projeto.
+
+Nesta etapa, a KYNOVA-X continua utilizando as estimativas do INCA como fonte principal. A integração das demais bases oficiais permanece prevista para as próximas fases do desenvolvimento.
+
+**Repositório do projeto:** https://github.com/Nobre-DS/KYNOVA-X
