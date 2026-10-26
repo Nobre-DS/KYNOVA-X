@@ -97,3 +97,87 @@ Outras fontes, como CNES, SIA/SUS, SIH/SUS, IBGE e Painel-Oncologia, poderão se
 ## Ferramentas utilizadas
 
 Foram utilizados Python, Streamlit, Pandas, Requests, Beautiful Soup, Git e GitHub. O ChatGPT (OpenAI) foi utilizado como ferramenta de apoio e revisão da documentação do TP2. As funcionalidades foram verificadas por meio de testes na aplicação local.
+
+## Evolução do projeto no TP3
+
+No TP3, a aplicação KYNOVA-X foi ampliada com novas funcionalidades de navegação e consulta de dados, mantendo as informações e os recursos desenvolvidos nas etapas anteriores.
+
+### Aplicação com múltiplas páginas
+
+A interface foi organizada em páginas, com menu lateral de navegação:
+
+- **Consulta INCA:** apresenta uma amostra das estimativas de câncer do INCA para 2026, com filtro por sexo.
+- **Informações INCA:** apresenta o conteúdo textual extraído de uma página oficial do INCA com Beautiful Soup.
+- **Upload e Download:** permite enviar arquivos CSV e baixar os dados combinados.
+- **Consulta API:** permite consultar informações disponibilizadas pela API desenvolvida com FastAPI.
+
+A aplicação continua sendo executada pelo arquivo `app.py`.
+
+### Integração com FastAPI
+
+Foi criado o arquivo `api.py`, responsável pela disponibilização de duas rotas:
+
+- **GET `/estimativas`:** consulta os registros disponíveis.
+- **POST `/estimativas`:** recebe novos registros com os campos `sexo`, `localizacao`, `casos` e `ano`.
+
+Os registros adicionados pela API são armazenados separadamente em `data/processed/registros_api.csv`, preservando o arquivo original das estimativas do INCA.
+
+As duas rotas foram testadas por meio da documentação interativa do FastAPI, disponível em `http://127.0.0.1:8000/docs`.
+
+A consulta GET também foi testada na interface Streamlit, por meio da página Consulta API.
+
+### Como executar o projeto no TP3
+
+O ambiente utilizado nesta etapa foi identificado como `.venv_tp3`.
+
+Para preparar o ambiente, abra o Terminal na pasta principal `projeto_cancer` e execute:
+
+```bash
+python3-m venv .venv_tp3
+source.venv_tp3/bin/activate
+python-m pip install -r requirements.txt
+```
+
+Para iniciar a API, execute:
+
+```bash
+python -m uvicorn api:app --reload --port 8000
+```
+
+A documentação interativa da API poderá ser acessada em:
+
+`http://127.0.0.1:8000/docs`
+
+Em outro Terminal, com o mesmo ambiente virtual ativado, execute:
+
+```bash
+python-m streamlit run app.py
+```
+
+A aplicação Streamlit poderá ser acessada pelo endereço local informado no Terminal, normalmente `http://localhost:8501`.
+
+A página Consulta API depende de o servidor FastAPI estar em execução.
+
+### Coleta de dados
+
+Nesta etapa, foram mantidos os dados coletados anteriormente com Requests e Beautiful Soup. Não foi necessário utilizar Selenium, pois a extração realizada não dependeu de interações com elementos dinâmicos.
+
+### Preparação para uso futuro com LLMs
+
+Os dados estruturados e o conteúdo textual disponíveis na KYNOVA-X poderão ser utilizados, nas próximas etapas, para desenvolver funcionalidades de perguntas e respostas e geração de resumos.
+
+Esses recursos de inteligência artificial ainda não foram implementados no TP3.
+
+### Limitações
+
+A aplicação utiliza uma amostra demonstrativa de 10 registros das estimativas do INCA. Os registros adicionais utilizados para testar a API não representam estimativas epidemiológicas oficiais.
+
+No TP3, a aplicação e a API foram desenvolvidas e testadas localmente, sem publicação em endereço público.
+
+### Documentação
+
+Os documentos `project_charter.md` e `data_summary_report.md`, disponíveis na pasta `docs/`, foram atualizados para registrar as funcionalidades e as decisões tomadas no TP3.
+
+### Ferramentas utilizadas no TP3
+
+Foram utilizados Python, Streamlit, Pandas, Requests, Beautiful Soup, FastAPI, Uvicorn, Git e GitHub. O ChatGPT (OpenAI) foi utilizado como ferramenta de apoio no desenvolvimento e na revisão da documentação do TP3. As funcionalidades foram verificadas por meio de testes realizados na aplicação local.

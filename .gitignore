@@ -1,6 +1,8 @@
+
 # Ambientes virtuais
 .venv/
 .venv_tp2/
+.venv_tp3/
 
 # Arquivos temporários do Python
 __pycache__/
@@ -11,3 +13,6 @@ __pycache__/
 
 # Configurações locais
 .env
+
+# Arquivo de registros adicionais da API
+data/processed/registros_api.csv

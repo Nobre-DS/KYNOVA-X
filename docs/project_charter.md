@@ -61,3 +61,46 @@ As funcionalidades foram desenvolvidas utilizando Python e Streamlit, preservand
 Nesta etapa, a KYNOVA-X continua utilizando as estimativas do INCA como fonte principal. A integração das demais bases oficiais permanece prevista para as próximas fases do desenvolvimento.
 
 **Repositório do projeto:** https://github.com/Nobre-DS/KYNOVA-X
+
+## 7. Evolução do Projeto - TP3
+
+Nesta terceira etapa, a KYNOVA-X foi aprimorada para facilitar a navegação entre as funcionalidades e permitir a consulta de dados por meio de uma API, mantendo sua proposta inicial de apoiar o planejamento e a gestão da atenção oncológica.
+
+### 7.1. Funcionalidades desenvolvidas
+
+- **Aplicação com múltiplas páginas:** organização da interface Streamlit em páginas destinadas à consulta das estimativas do INCA, apresentação das informações extraídas da página oficial, upload e download de arquivos CSV e consulta de dados por meio de uma API.
+- **Menu de navegação:** implementação de um menu lateral para acessar as diferentes funcionalidades.
+- **Integração com FastAPI:** desenvolvimento de uma API para consultar e adicionar registros.
+- **Rota GET `/estimativas`:** consulta aos registros disponíveis na aplicação.
+- **Rota POST `/estimativas`:** inclusão de registros adicionais, armazenados separadamente do arquivo original.
+- **Integração entre Streamlit e FastAPI:** criação de uma página que permite consultar os dados da API diretamente na interface da KYNOVA-X.
+
+As funcionalidades foram verificadas em ambiente local, incluindo testes das rotas GET e POST e da comunicação entre Streamlit e FastAPI.
+
+### 7.2. Atualização do escopo
+
+O problema de negócio permanece relacionado à fragmentação das informações epidemiológicas e assistenciais utilizadas no planejamento da atenção oncológica.
+
+A implementação de múltiplas páginas e de uma API amplia as possibilidades de organização, consulta e disponibilização dos dados, sem alterar a finalidade inicial da KYNOVA-X.
+
+Nesta etapa, foram mantidas as amostras demonstrativas das estimativas do INCA e os conteúdos textuais coletados anteriormente com Beautiful Soup.
+
+Não foi necessário utilizar Selenium, pois a coleta realizada não exigiu interação com elementos dinâmicos da página consultada.
+
+### 7.3. Preparação para integração futura com LLMs
+
+Os dados disponíveis na KYNOVA-X poderão apoiar futuras funcionalidades baseadas em modelos de linguagem de grande porte (LLMs).
+
+Uma possibilidade é desenvolver um recurso de perguntas e respostas sobre os dados epidemiológicos e os conteúdos oficiais utilizados na aplicação. Outra possibilidade é a geração de resumos de textos e informações que possam auxiliar a compreensão dos dados.
+
+Essas funcionalidades representam possibilidades de evolução e não foram implementadas no TP3.
+
+### 7.4. Limitações e continuidade
+
+A KYNOVA-X continua utilizando uma amostra demonstrativa das estimativas do INCA, sem representar a totalidade das informações epidemiológicas disponíveis.
+
+Os registros adicionais enviados à API são armazenados separadamente dos dados originais. Os registros utilizados nos testes não representam estimativas oficiais.
+
+A integração de outras bases oficiais, como CNES, SIA/SUS, SIH/SUS, IBGE e Painel-Oncologia, permanece prevista para etapas futuras.
+
+A aplicação e a API foram desenvolvidas e testadas localmente, sem publicação em ambiente público nesta etapa.

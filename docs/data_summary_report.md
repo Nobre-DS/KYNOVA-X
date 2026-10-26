@@ -86,3 +86,73 @@ Os registros utilizados nesta etapa constituem uma amostra demonstrativa, não r
 O conteúdo textual extraído da página do INCA é apresentado para consulta e não constitui uma nova base de estimativas epidemiológicas.
 
 As fontes complementares CNES, SIA/SUS, SIH/SUS, IBGE e Painel-Oncologia permanecem previstas para avaliação e possível integração nas próximas etapas do projeto.
+
+## 6. Atualização das Fontes e dos Dados - TP3
+
+Nesta terceira etapa, a KYNOVA-X manteve as fontes de dados utilizadas anteriormente e passou a disponibilizar informações por meio de uma API desenvolvida com FastAPI.
+
+### 6.1. Dados utilizados
+
+A aplicação continua utilizando dois arquivos principais:
+
+- **`data/raw/estimativas_inca_2026_amostra.csv`:** contém uma amostra demonstrativa de 10 registros das estimativas de câncer do INCA para 2026, organizados pelas colunas `sexo`, `localizacao`, `casos` e `ano`.
+- **`data/raw/conteudo_inca_web.csv`:** contém informações textuais coletadas de uma página oficial do INCA utilizando Requests e Beautiful Soup, organizadas pelas colunas `tipo` e `texto`.
+
+Esses arquivos foram mantidos para alimentar as páginas de consulta da aplicação Streamlit.
+
+### 6.2. Dados adicionais recebidos pela API
+
+No TP3, foi desenvolvida uma API com FastAPI, utilizando duas rotas:
+
+- **GET `/estimativas`:** permite consultar os registros disponíveis.
+- **POST `/estimativas`:** permite adicionar registros com os campos `sexo`, `localizacao`, `casos` e `ano`.
+
+Os registros enviados pela rota POST são armazenados no arquivo `data/processed/registros_api.csv`, sem modificar o CSV original das estimativas do INCA.
+
+Durante os testes, foi incluído um registro demonstrativo para verificar o funcionamento da rota POST. Esse registro não corresponde a uma estimativa epidemiológica oficial.
+
+### 6.3. Integração dos dados com Streamlit
+
+A aplicação foi organizada em múltiplas páginas, permitindo consultar separadamente:
+
+- A amostra das estimativas do INCA.
+- As informações textuais extraídas da página oficial.
+- Os registros combinados por meio de upload e download de arquivos CSV.
+- Os registros disponibilizados pela API FastAPI.
+
+A integração com a API foi testada por meio de uma requisição GET realizada pela aplicação Streamlit.
+
+### 6.4. Coleta de dados de páginas web
+
+A coleta de conteúdo textual permanece baseada em Requests e Beautiful Soup.
+
+Não foi necessário utilizar Selenium nesta etapa, pois a fonte consultada não exigiu interação com elementos dinâmicos para a extração realizada.
+
+Também não foram incorporadas novas fontes de dados oficiais durante o TP3.
+
+### 6.5. Preparação dos dados para uso futuro com LLMs
+
+Os dados estruturados das estimativas e os conteúdos textuais coletados poderão ser utilizados futuramente em funcionalidades baseadas em modelos de linguagem de grande porte (LLMs).
+
+Uma possibilidade é desenvolver um sistema de perguntas e respostas que utilize os dados disponíveis para apoiar consultas sobre informações epidemiológicas.
+
+Outra possibilidade é utilizar os textos oficiais coletados para gerar resumos que facilitem a compreensão das informações.
+
+Essas funcionalidades não foram implementadas nesta etapa.
+
+### 6.6. Limitações dos dados
+
+A amostra utilizada não representa a totalidade das estimativas oficiais do INCA.
+
+Os registros adicionais recebidos pela API devem ser diferenciados dos dados originais, especialmente quando utilizados apenas para testes.
+
+As demais fontes previstas, como CNES, SIA/SUS, SIH/SUS, IBGE e Painel-Oncologia, continuam previstas para avaliação e possível integração nas próximas etapas do projeto.
+
+
+### Referência da fonte oficial dos dados
+
+Instituto Nacional de Câncer (INCA).
+Brasil — estimativa dos casos novos.
+Estimativas para o ano de 2026.
+
+Fonte: https://www.gov.br/inca/pt-br/assuntos/cancer/numeros/estimativa/estado-capital/por-estado-e-capital/brasil/brasil-consolidado
