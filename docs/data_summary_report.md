@@ -8,7 +8,7 @@
 
 **Fonte inicial:** Estimativas de Câncer 2026–2028 do Instituto Nacional de Câncer (INCA).
 
-**Situação do documento:** Primeiro esboço do Data Summary Report, elaborado na etapa de planejamento do projeto.
+**Situação do documento:** Consolidado até TP5; execução da interface e sumarização local verificadas em 20/11/2026. Não corresponde à implantação em produção.
 
 ## 2. Fonte Principal de Dados
 
@@ -87,72 +87,55 @@ O conteúdo textual extraído da página do INCA é apresentado para consulta e 
 
 As fontes complementares CNES, SIA/SUS, SIH/SUS, IBGE e Painel-Oncologia permanecem previstas para avaliação e possível integração nas próximas etapas do projeto.
 
-## 6. Atualização das Fontes e dos Dados - TP3
+## 6. Atualização do Data Summary Report - TP3
 
-Nesta terceira etapa, a KYNOVA-X manteve as fontes de dados utilizadas anteriormente e passou a disponibilizar informações por meio de uma API desenvolvida com FastAPI.
+O TP3 manteve os dois arquivos principais (`data/raw/estimativas_inca_2026_amostra.csv` e `data/raw/conteudo_inca_web.csv`) e implementou a API FastAPI GET `/estimativas` e POST `/estimativas`. Registros enviados ao POST são gravados separadamente em `data/processed/registros_api.csv`, que pode conter casos fictícios de teste e não é parte da base oficial. A página Streamlit `4_Consulta_API.py` consome o GET. Não houve integração de novas bases nem uso de Selenium; o texto já vinha da extração via Requests/Beautiful Soup.
 
-### 6.1. Dados utilizados
+## 7. Integração técnica TP4 e TP5 - linhagem dos dados
 
-A aplicação continua utilizando dois arquivos principais:
+| Camada | Entrada | Operação | Saída e utilização |
+|---|---|---|---|
+| Aquisição numérica (TP1) | Página de estimativas do INCA, amostra selecionada | Organização tabular | `data/raw/estimativas_inca_2026_amostra.csv` |
+| Aquisição textual (TP2) | Página oficial do INCA | Requests + Beautiful Soup, extração `h1`/`p` | `data/raw/conteudo_inca_web.csv` |
+| Preparação de dados (TP5) | Os dois CSVs originais | Pandas; conferência de colunas, normalização de espaços e tipos | Tabelas e trechos aptos à sumarização |
+| Modelagem LLM (TP4/5) | Texto previamente extraído e selecionado no painel | Prompt delimitado + FLAN-T5-small local via FastAPI | JSON de sucesso com resumo, modelo e tempo |
+| Avaliação/comunicação (TP5) | Dados tabulares + JSON do modelo | Gráficos de estimativas selecionadas, comparação de palavras e alertas heurísticos | Página `pages/5_Dashboard_IA.py` |
 
-- **`data/raw/estimativas_inca_2026_amostra.csv`:** contém uma amostra demonstrativa de 10 registros das estimativas de câncer do INCA para 2026, organizados pelas colunas `sexo`, `localizacao`, `casos` e `ano`.
-- **`data/raw/conteudo_inca_web.csv`:** contém informações textuais coletadas de uma página oficial do INCA utilizando Requests e Beautiful Soup, organizadas pelas colunas `tipo` e `texto`.
+### 7.1. Dicionário de dados observado
 
-Esses arquivos foram mantidos para alimentar as páginas de consulta da aplicação Streamlit.
+**Estimativas (10 linhas selecionadas):** `sexo` (categoria), `localizacao` (categoria descritiva), `casos` (inteiro de casos estimados, não contagem de pacientes do projeto) e `ano` (2026 na amostra). O gráfico se baseia estritamente nessas dez linhas e não representa ranking nacional, taxas padronizadas ou prevalência.
 
-### 6.2. Dados adicionais recebidos pela API
+**Textos web (2 linhas):** `tipo` (elemento HTML; por exemplo `h1` e `p`) e `texto` (conteúdo textual extraído do site oficial). Somente o registro `p` tem 30 ou mais caracteres e pode ser encaminhado à rota de TP4; `h1` isolado é insuficiente. O campo de texto enviado pela API tem limite de 30 a 1.500 caracteres.
 
-No TP3, foi desenvolvida uma API com FastAPI, utilizando duas rotas:
+### 7.2. Preparação e qualidade dos dados
 
-- **GET `/estimativas`:** permite consultar os registros disponíveis.
-- **POST `/estimativas`:** permite adicionar registros com os campos `sexo`, `localizacao`, `casos` e `ano`.
+- Confirmar presença de colunas obrigatórias antes do processamento.
+- Converter `casos` e `ano` em tipos numéricos e eliminar linhas inválidas para os gráficos, sem corrigir números manualmente.
+- Remover espaços redundantes dos trechos coletados; selecionar apenas conteúdo textual utilizável.
+- Conservar os dados brutos originais, separados dos registros de teste enviados pela API.
+- Evitar soma de categorias epidemiológicas diferentes como total nacional; os registros são apenas uma seleção de valores publicados.
+- Transparência: a comparação de palavras antes/depois é medida **linguística de comprimento**, não índice de fidelidade ou precisão.
 
-Os registros enviados pela rota POST são armazenados no arquivo `data/processed/registros_api.csv`, sem modificar o CSV original das estimativas do INCA.
+### 7.3. Prompt Engineering e inferência local
 
-Durante os testes, foi incluído um registro demonstrativo para verificar o funcionamento da rota POST. Esse registro não corresponde a uma estimativa epidemiológica oficial.
+O TP4 comprovou integração via POST `/processar_texto` com FLAN-T5-small e JSON `texto_original`, `tipo_analise`, `resultado`, `modelo`, `execucao` e `tempo_segundos`. A versão de prompt disponibilizada para o TP5 restringe a resposta a até duas frases e instrui que não se acrescentem números nem recomendações clínicas. A saída original do TP4 teve eco parcial da instrução. No teste efetivo da página TP5, a saída ainda incluiu expressão instrucional; não há evidência de melhoria factual. A fidelidade e a utilidade dos resumos exigem revisão humana.
 
-### 6.3. Integração dos dados com Streamlit
+### 7.4. Dados coletados versus dados adicionais
 
-A aplicação foi organizada em múltiplas páginas, permitindo consultar separadamente:
+`data/processed/registros_api.csv` não alimenta a visualização de amostra oficial no dashboard TP5. Qualquer registro enviado pelo usuário permanece distinto da base `data/raw`. As demais fontes (CNES, SIA/SUS, SIH/SUS, IBGE e Painel-Oncologia) **não foram integradas** e não podem ser mencionadas como resultados presentes.
 
-- A amostra das estimativas do INCA.
-- As informações textuais extraídas da página oficial.
-- Os registros combinados por meio de upload e download de arquivos CSV.
-- Os registros disponibilizados pela API FastAPI.
+### 7.5. Estado de verificação e limitações
 
-A integração com a API foi testada por meio de uma requisição GET realizada pela aplicação Streamlit.
+**Comprovado nos testes do TP4 (20/11/2026):** CPU local ARM64/Python 3.11.9; média de inferência 1,345 s; memória final do processo 570,1 MB; HTTP 200/422 reais; 7 testes automatizados com simulações aprovados; código do TP4 publicado no GitHub.
 
-### 6.4. Coleta de dados de páginas web
+**Comprovado nos testes do TP5 (20/11/2026):** dashboard Streamlit carregado no Mac após correção de compatibilidade das bibliotecas; 10 linhas da amostra numérica e 2 registros de coleta textual exibidos; gráfico de estimativas gerado; sumarização requisitada à API local com saída apresentada e gráfico de palavras (86 palavras na origem e 46 na saída, conforme captura); execução de `pytest` com **14 testes aprovados e 1 aviso de depreciação**. A resposta observada reproduziu texto instrucional, limitando a utilidade da sumarização. A publicação dos códigos do TP5 no GitHub ainda depende de `git commit` e `git push`; não está declarada como concluída.
 
-A coleta de conteúdo textual permanece baseada em Requests e Beautiful Soup.
+**Limites:** apenas uma pequena amostra e um parágrafo elegível para resumo; não há evidência de sumarização de grandes volumes, de ganho de produtividade medido ou de efetividade clínica. A geração do LLM pode omitir/alterar fatos.
 
-Não foi necessário utilizar Selenium nesta etapa, pois a fonte consultada não exigiu interação com elementos dinâmicos para a extração realizada.
+### 7.6. Fontes e IA utilizada
 
-Também não foram incorporadas novas fontes de dados oficiais durante o TP3.
-
-### 6.5. Preparação dos dados para uso futuro com LLMs
-
-Os dados estruturados das estimativas e os conteúdos textuais coletados poderão ser utilizados futuramente em funcionalidades baseadas em modelos de linguagem de grande porte (LLMs).
-
-Uma possibilidade é desenvolver um sistema de perguntas e respostas que utilize os dados disponíveis para apoiar consultas sobre informações epidemiológicas.
-
-Outra possibilidade é utilizar os textos oficiais coletados para gerar resumos que facilitem a compreensão das informações.
-
-Essas funcionalidades não foram implementadas nesta etapa.
-
-### 6.6. Limitações dos dados
-
-A amostra utilizada não representa a totalidade das estimativas oficiais do INCA.
-
-Os registros adicionais recebidos pela API devem ser diferenciados dos dados originais, especialmente quando utilizados apenas para testes.
-
-As demais fontes previstas, como CNES, SIA/SUS, SIH/SUS, IBGE e Painel-Oncologia, continuam previstas para avaliação e possível integração nas próximas etapas do projeto.
-
-
-### Referência da fonte oficial dos dados
-
-Instituto Nacional de Câncer (INCA).
-Brasil — estimativa dos casos novos.
-Estimativas para o ano de 2026.
-
-Fonte: https://www.gov.br/inca/pt-br/assuntos/cancer/numeros/estimativa/estado-capital/por-estado-e-capital/brasil/brasil-consolidado
+- INCA. Estimativas de Câncer 2026–2028. https://www.gov.br/inca/pt-br/assuntos/cancer/numeros/estimativa/estado-capital/por-estado-e-capital/brasil/brasil-consolidado
+- Nações Unidas. Objetivos de Desenvolvimento Sustentável. https://sdgs.un.org/goals
+- Hugging Face. `google/flan-t5-small`. https://huggingface.co/google/flan-t5-small
+- Repositório: https://github.com/Nobre-DS/KYNOVA-X
+- ChatGPT (OpenAI) como apoio à redação, documentação e geração/revisão de código, sujeito a teste e validação humana.

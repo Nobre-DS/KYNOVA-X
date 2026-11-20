@@ -1,0 +1,4 @@
+# Instalar no .venv_tp4 já configurado no TP4.
+# Usa as dependências existentes, sem criar novo ambiente.
+-r requirements.txt
+-r requirements_tp4.txt

@@ -64,43 +64,68 @@ Nesta etapa, a KYNOVA-X continua utilizando as estimativas do INCA como fonte pr
 
 ## 7. Evolução do Projeto - TP3
 
-Nesta terceira etapa, a KYNOVA-X foi aprimorada para facilitar a navegação entre as funcionalidades e permitir a consulta de dados por meio de uma API, mantendo sua proposta inicial de apoiar o planejamento e a gestão da atenção oncológica.
+A aplicação ganhou quatro páginas Streamlit (`pages/`) para consultar estimativas, texto extraído, recursos de upload/download e a API. O FastAPI implementou GET `/estimativas` e POST `/estimativas` para registros adicionais; estes são armazenados separadamente dos dados oficiais. Requests e Beautiful Soup permaneceram suficientes para coletar o texto da página institucional do INCA, sem Selenium. A utilização de LLMs foi planejada, mas não implementada nessa etapa.
 
-### 7.1. Funcionalidades desenvolvidas
 
-- **Aplicação com múltiplas páginas:** organização da interface Streamlit em páginas destinadas à consulta das estimativas do INCA, apresentação das informações extraídas da página oficial, upload e download de arquivos CSV e consulta de dados por meio de uma API.
-- **Menu de navegação:** implementação de um menu lateral para acessar as diferentes funcionalidades.
-- **Integração com FastAPI:** desenvolvimento de uma API para consultar e adicionar registros.
-- **Rota GET `/estimativas`:** consulta aos registros disponíveis na aplicação.
-- **Rota POST `/estimativas`:** inclusão de registros adicionais, armazenados separadamente do arquivo original.
-- **Integração entre Streamlit e FastAPI:** criação de uma página que permite consultar os dados da API diretamente na interface da KYNOVA-X.
+## 8. Evolução do Projeto - TP4 (verificada em 20/11/2026)
 
-As funcionalidades foram verificadas em ambiente local, incluindo testes das rotas GET e POST e da comunicação entre Streamlit e FastAPI.
+- Modelo: `google/flan-t5-small`, baixado da Hugging Face e executado localmente em CPU com Transformers e PyTorch; ambiente macOS ARM64, Python 3.11.9.
+- Backend: rota `POST /processar_texto`, incorporada ao `api.py` existente por `APIRouter`, com validação Pydantic e respostas estruturadas.
+- Evidências do TP4: HTTP 200 com JSON contendo a saída, HTTP 422 para entrada curta, sete testes automatizados simulados aprovados, inferência média de 1,345 s e RAM ao final de 570,1 MB na medição documentada.
+- Limitação real: o modelo repetiu a instrução e parte do texto; o sucesso HTTP não atesta boa sumarização. Cenários 503/504/500 foram avaliados em testes simulados.
 
-### 7.2. Atualização do escopo
+## 9. Consolidação do TP5 (execução local verificada em 20/11/2026)
 
-O problema de negócio permanece relacionado à fragmentação das informações epidemiológicas e assistenciais utilizadas no planejamento da atenção oncológica.
+### 9.1. Proposta e justificativa de negócio
 
-A implementação de múltiplas páginas e de uma API amplia as possibilidades de organização, consulta e disponibilização dos dados, sem alterar a finalidade inicial da KYNOVA-X.
+**Problema preservado:** informações epidemiológicas e textuais estão dispersas e podem demandar consultas separadas por gestores e pesquisadores. A KYNOVA-X organiza uma amostra rastreável de dados do INCA e permite visualizar o conteúdo textual coletado e solicitar uma síntese em interface única. Não se afirma que a aplicação substitui bases completas nem que produza decisões assistenciais automáticas.
 
-Nesta etapa, foram mantidas as amostras demonstrativas das estimativas do INCA e os conteúdos textuais coletados anteriormente com Beautiful Soup.
+**Opção selecionada:** Opção 2 - automação de sumarização de textos usando LLM local; as opções de memória conversacional e agentes inteligentes não foram implementadas porque o enunciado exige somente uma.
 
-Não foi necessário utilizar Selenium, pois a coleta realizada não exigiu interação com elementos dinâmicos da página consultada.
+**Como o prompt engineering agrega valor:** entrada baseada em conteúdo previamente extraído da fonte; instruções em português delimitam escopo, formato e vedam acréscimo de números e recomendações clínicas. A resposta é apresentada com a origem, a duração e avisos quando o texto reproduz a instrução ou não diminui de extensão. A fidelidade factual continua exigindo revisão humana.
 
-### 7.3. Preparação para integração futura com LLMs
+### 9.2. Entregas e responsabilidades
 
-Os dados disponíveis na KYNOVA-X poderão apoiar futuras funcionalidades baseadas em modelos de linguagem de grande porte (LLMs).
+| Entrega | Evidência e localização | Situação |
+|---|---|---|
+| Dados tabulares | `data/raw/estimativas_inca_2026_amostra.csv` (10 linhas) | Existente TP1 |
+| Extração textual | `data/raw/conteudo_inca_web.csv` (2 linhas), `src/extrair_inca.py` | Existente TP2 |
+| API com estimativas | `api.py`, GET e POST `/estimativas` | Existente TP3 |
+| LLM local | `llm_local.py`, `rotas_llm.py`, POST `/processar_texto` | Testado TP4 |
+| Dashboard com IA | `pages/5_Dashboard_IA.py`, `src/analise_tp5.py` | Executado localmente no Streamlit: tabela, gráfico e sumarização via FastAPI |
+| Testes/documentação | `tests/test_analise_tp5.py`, `tests/test_rotas_llm.py` e artefatos TDSP | 14 testes automatizados aprovados, com 1 aviso de depreciação; evidências registradas em capturas locais |
 
-Uma possibilidade é desenvolver um recurso de perguntas e respostas sobre os dados epidemiológicos e os conteúdos oficiais utilizados na aplicação. Outra possibilidade é a geração de resumos de textos e informações que possam auxiliar a compreensão dos dados.
+**Responsável pelo projeto:** estudante autora da KYNOVA-X. **Usuários de interesse:** gestores, pesquisadores, docentes e estudantes, em cenário demonstrativo.
 
-Essas funcionalidades representam possibilidades de evolução e não foram implementadas no TP3.
+### 9.3. Ciclo TDSP e correspondência com Ciência de Dados
 
-### 7.4. Limitações e continuidade
+1. **Entendimento do negócio:** melhorar organização e consulta de informações relacionadas ao planejamento oncológico.
+2. **Aquisição e entendimento:** amostra tabular selecionada da publicação oficial do INCA e coleta textual via Requests/Beautiful Soup; registrar proveniência e limitações.
+3. **Preparação:** CSVs com esquema explícito, leitura via Pandas, verificação de colunas, tipos numéricos e remoção de entradas inválidas para visualização.
+4. **Modelagem:** geração de texto com FLAN-T5-small local e prompt restritivo, sem fornecer ao LLM a tarefa de calcular casos ou inferir decisões clínicas.
+5. **Avaliação:** testes de esquema, execução local, avaliação humana da fidelidade, avisos sobre ecos do prompt, gráficos e rotas com HTTP apropriado.
+6. **Operacionalização/comunicação:** painel Streamlit, FastAPI, README, versionamento Git e relatório acadêmico. Não há hospedagem pública ou operação em produção.
 
-A KYNOVA-X continua utilizando uma amostra demonstrativa das estimativas do INCA, sem representar a totalidade das informações epidemiológicas disponíveis.
+### 9.4. Indicadores de acompanhamento (sem metas de impacto inventadas)
 
-Os registros adicionais enviados à API são armazenados separadamente dos dados originais. Os registros utilizados nos testes não representam estimativas oficiais.
+- Quantidade de registros amostrais exibidos e quantidade de textos coletados.
+- Tempo de inferência da API e sucesso/falha das requisições.
+- Contagem de palavras antes/depois da síntese, exclusivamente como métrica de extensão.
+- Frequência de alertas heurísticos de eco/reprodução (não corresponde a índice de acurácia).
+- Comprovação da rastreabilidade dos dados e separação de registros não oficiais.
 
-A integração de outras bases oficiais, como CNES, SIA/SUS, SIH/SUS, IBGE e Painel-Oncologia, permanece prevista para etapas futuras.
+### 9.5. ESG e ODS - alinhamento sem extrapolações
 
-A aplicação e a API foram desenvolvidas e testadas localmente, sem publicação em ambiente público nesta etapa.
+**E (ambiental):** a versão atual não mede emissões, recursos nem impactos ambientais. **S (social):** organização de informações relacionadas à saúde pública; alinhamento conceitual ao ODS 3 (Saúde e Bem-Estar). **G (governança):** transparência sobre proveniência, limitações, respostas de IA e distinção entre registros oficiais e testes; relação conceitual com o ODS 16 (instituições eficazes e responsáveis). A aplicação não foi testada para impacto causal em saúde ou pontuação ESG institucional.
+
+### 9.6. Riscos, premissas e limites
+
+- Fonte tabular reduzida (10 linhas), texto web reduzido (2 linhas, somente 1 elegível para resumo no limite atual); não atende ainda a processamento real de grandes volumes.
+- Uma saída de LLM não deve ser interpretada como resumo correto sem confrontação com a fonte.
+- Requisição ocorre em `localhost`, após download do modelo. O processamento não envia o conteúdo para API online, mas a validação offline requer teste específico se for alegada.
+- Não combinar registros enviados pelos usuários com estatísticas oficiais sem identificar sua procedência.
+- A página TP5 foi aberta e testada no Mac em 20/11/2026: exibiu dez registros tabulares, dois registros textuais, gráficos e o resultado do LLM local. Na captura, o texto de origem tinha 86 palavras e a saída 46; o resultado ainda reproduziu instruções de sumarização, portanto **não** se atestou qualidade semântica satisfatória. A redução de palavras não demonstra precisão.
+- Após ajuste local de compatibilidade das bibliotecas (NumPy 2.2.6 e Pandas 2.2.3), a interface carregou sem o erro anterior do PyArrow. A correção deverá ser registrada no arquivo de dependências.
+- A execução offline, a escala em grandes volumes e impacto assistencial/ESG não foram avaliados; não devem ser alegados.
+
+**Referências:** INCA (Estimativas 2026-2028); Nações Unidas (ODS 3 e 16); Hugging Face (modelo FLAN-T5-small); código em https://github.com/Nobre-DS/KYNOVA-X; uso do ChatGPT (OpenAI) como ferramenta de apoio ao desenvolvimento, mediante validação do usuário.
