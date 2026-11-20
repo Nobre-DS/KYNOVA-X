@@ -16,3 +16,6 @@ __pycache__/
 
 # Arquivo de registros adicionais da API
 data/processed/registros_api.csv
+
+.venv_tp4/
+modelos/

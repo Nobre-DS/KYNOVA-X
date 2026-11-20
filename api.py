@@ -64,3 +64,7 @@ def adicionar_estimativa(registro: Registro):
         "mensagem": "Registro adicionado com sucesso.",
         "registro": novo_registro
     }
+
+
+from rotas_llm import router as router_llm
+app.include_router(router_llm)
